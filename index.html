@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>wobble-sol — Wiggly Video Mascot</title>
+  <meta name="description" content="Wobble-sol: click the mascot to make it wobble.">
+  <style>
+    :root{
+      --max-width: 460px;
+      --bg: linear-gradient(180deg,#f7fbff,#eaf3ff);
+      --card-bg: #ffffff;
+      --shadow: 0 18px 40px rgba(5,40,30,0.08);
+      --accent: #34c37f;
+      --wobble-duration: 700ms;
+    }
+
+    html,body{height:100%; margin:0; font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;}
+    body{
+      display:flex; align-items:center; justify-content:center;
+      background:var(--bg); padding:24px;
+    }
+
+    .card{
+      width:100%; max-width:720px; background:var(--card-bg);
+      border-radius:18px; box-shadow:var(--shadow);
+      padding:20px; text-align:center;
+    }
+
+    h1{ margin:0 0 8px; font-size:20px; color:#05343a; }
+    p.lead{ margin:0 0 18px; color:#0b5250; }
+
+    /* responsive video container */
+    .media-wrap{ display:flex; justify-content:center; }
+    video.mascot{
+      width: clamp(220px, 56vw, var(--max-width));
+      height: auto;
+      border-radius:16px;
+      box-shadow: 0 8px 28px rgba(9,35,22,0.08);
+      cursor:pointer;
+      transform-origin: 50% 60%; /* pivot a little below center */
+      will-change: transform;
+      outline: none;
+    }
+
+    /* wobble keyframes */
+    @keyframes wobble {
+      0% { transform: rotate(0) scale(1); }
+      12% { transform: rotate(-12deg) scale(1.04); }
+      28% { transform: rotate(18deg) scale(0.98); }
+      44% { transform: rotate(-9deg) scale(1.02); }
+      60% { transform: rotate(6deg) scale(0.995); }
+      76% { transform: rotate(-3deg) scale(1.002); }
+      100% { transform: rotate(0) scale(1); }
+    }
+    .wobble{
+      animation: wobble var(--wobble-duration) cubic-bezier(.2,.9,.3,1) both;
+    }
+
+    .controls { margin-top:14px; display:flex; gap:10px; justify-content:center; align-items:center; flex-wrap:wrap;}
+    .btn{ background:var(--accent); color:#fff; border:0; padding:8px 12px; border-radius:10px; cursor:pointer; font-weight:600; }
+    .mutebtn{ background:#e6f7ee; color:#1a6b3c; border:1px solid rgba(20,120,70,0.08); padding:8px 10px; border-radius:10px; cursor:pointer; }
+
+    small.hint{ display:block; margin-top:8px; color:#2a5b53; }
+
+    /* small accessibility focus */
+    video.mascot:focus { box-shadow: 0 0 0 4px rgba(52,195,127,0.12); }
+  </style>
+</head>
+<body>
+  <div class="card" role="main">
+    <h1>wobble-sol</h1>
+    <p class="lead">Click or tap the mascot to make it wobble. It autoplays muted so it loads smoothly.</p>
+
+    <div class="media-wrap">
+      <!-- video: uses poster while loading; has both webm and mp4 sources if available -->
+      <video
+        id="mascotVideo"
+        class="mascot"
+        poster="assets/poster.png"
+        autoplay
+        muted
+        loop
+        playsinline
+        preload="metadata"
+        tabindex="0"
+        aria-label="Slimy mascot video. Click to wobble.">
+        <!-- optional: provide webm first (smaller) -->
+        <source src="assets/mascot.webm" type="video/webm">
+        <source src="assets/mascot.mp4" type="video/mp4">
+        Your browser does not support the video element.
+      </video>
+    </div>
+
+    <div class="controls">
+      <button id="muteToggle" class="mutebtn" aria-pressed="true">Muted (tap to unmute)</button>
+      <button id="downloadBtn" class="btn">Download video</button>
+    </div>
+
+    <small class="hint">Tip: If the video doesn't autoplay, make sure it is muted (browsers block autoplay with sound).</small>
+  </div>
+
+  <script>
+    // --- simple, robust JS: click -> wobble; mute/unmute and download ---
+    (function(){
+      const video = document.getElementById('mascotVideo');
+      const muteToggle = document.getElementById('muteToggle');
+      const downloadBtn = document.getElementById('downloadBtn');
+
+      // Make click/tap trigger the wobble animation.
+      function triggerWobble(){
+        video.classList.remove('wobble');
+        // reflow to restart animation
+        void video.offsetWidth;
+        video.classList.add('wobble');
+      }
+
+      // Click / keyboard activation
+      video.addEventListener('click', (e) => {
+        triggerWobble();
+      });
+
+      // also allow keyboard activation: Space or Enter wobbles
+      video.addEventListener('keydown', (ev) => {
+        if (ev.key === ' ' || ev.key === 'Enter') {
+          ev.preventDefault();
+          triggerWobble();
+        }
+      });
+
+      // Optional: toggle mute/unmute on button
+      muteToggle.addEventListener('click', () => {
+        video.muted = !video.muted;
+        muteToggle.textContent = video.muted ? 'Muted (tap to unmute)' : 'Unmuted (tap to mute)';
+        muteToggle.setAttribute('aria-pressed', String(!video.muted));
+        // If unmuting, ensure playback happens (user gesture)
+        if (!video.muted) {
+          video.play().catch(()=>{ /* play might fail if browser blocks; ignore */ });
+        }
+      });
+
+      // Download button: downloads the MP4 (useful if you used webm too)
+      downloadBtn.addEventListener('click', () => {
+        const a = document.createElement('a');
+        a.href = 'assets/mascot.mp4';
+        a.download = 'wobble-sol-mascot.mp4';
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+      });
+
+      // Accessibility: if video is focusable, show hint for keyboard users
+      video.setAttribute('role','img');
+
+      // Ensure video plays muted on page load (if autoplay allowed)
+      if(video && video.paused){
+        video.play().catch(()=>{/* ignore autoplay fail */});
+      }
+    })();
+  </script>
+</body>
+</html>
