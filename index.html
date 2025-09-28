@@ -5,7 +5,34 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>wobble-sol — Wiggly Video Mascot</title>
   <meta name="description" content="HELLO WORLD! My Name Is Wobble Your Virtual Friend">
-  <style>
+  <style>.gallery {
+  margin-top: 40px;
+  text-align: center;
+}
+
+.gallery h2 {
+  color: #05343a;
+  margin-bottom: 20px;
+}
+
+.image-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 16px;
+}
+
+.image-grid img {
+  width: 100%;
+  height: auto;
+  border-radius: 14px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+  transition: transform 0.3s ease;
+}
+
+.image-grid img:hover {
+  transform: scale(1.05);
+}
+
     :root{
       --max-width: 460px;
       --bg: linear-gradient(180deg,#f7fbff,#eaf3ff);
@@ -199,6 +226,7 @@
   </script>
 </body>
 </html>
+
 
 
 
