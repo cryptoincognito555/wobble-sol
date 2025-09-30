@@ -23,10 +23,16 @@
 
 .image-grid img {
   width: 100%;
+  max-width: 220px;
+  max-height: 40vh;
   height: auto;
   border-radius: 14px;
   box-shadow: 0 8px 20px rgba(0,0,0,0.08);
   transition: transform 0.3s ease;
+  object-fit: cover;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .image-grid img:hover {
@@ -102,7 +108,7 @@
 <body>
   <div class="card" role="main">
     <div class="hello-banner">
-      Hello World!<br>
+      <b>Hello World!</b><br>
       My Name is <b>Wobble</b><br>
       Your Virtual Friend
     </div>
@@ -214,10 +220,10 @@
 /* Chatbot styling */
 #chat-container {
   position: fixed;
-  bottom: 30px;
+  bottom: 10px;
   left: 50%;
   transform: translateX(-50%);
-  width: 620px;
+  width: 420px;
   height: 100px;
   background: #fff;
   border: 2px solid #ccc;
@@ -295,7 +301,6 @@ async function sendMessage() {
 }
 </script>
 </html>
-
 
 
 
