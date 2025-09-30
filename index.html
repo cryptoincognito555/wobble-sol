@@ -201,8 +201,101 @@
       }
     })();
   </script>
-</body>
+</body><!-- Chatbot Container -->
+<div id="chat-container">
+  <div id="chat-box"></div> <!-- empty at start -->
+  <div id="chat-input-area">
+    <input type="text" id="user-input" placeholder="Ask me anything..." />
+    <button onclick="sendMessage()">Send</button>
+  </div>
+</div>
+
+<style>
+/* Chatbot styling */
+#chat-container {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 620px;
+  height: 100px;
+  background: #fff;
+  border: 2px solid #ccc;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  font-family: Arial, sans-serif;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.2);
+  z-index: 1000;
+}
+
+/* Chat messages area */
+#chat-box {
+  flex: 1;
+  padding: 10px;
+  overflow-y: auto;
+  font-size: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+/* Input + button row */
+#chat-input-area {
+  display: flex;
+  border-top: 1px solid #ccc;
+}
+
+#user-input {
+  border: none;
+  padding: 10px;
+  flex: 1;
+  outline: none;
+}
+
+button {
+  border: none;
+  background: #34c37f;
+  color: white;
+  cursor: pointer;
+  padding: 10px 14px;
+  font-weight: bold;
+  border-radius: 0 0 10px 0;
+}
+</style>
+
+<script>
+async function sendMessage() {
+  const input = document.getElementById("user-input");
+  const chatBox = document.getElementById("chat-box");
+  const userMessage = input.value.trim();
+
+  if (!userMessage) return;
+
+  // Show user message
+  chatBox.innerHTML += `<div><b>You:</b> ${userMessage}</div>`;
+  input.value = "";
+  chatBox.scrollTop = chatBox.scrollHeight;
+
+  try {
+    const res = await fetch("https://wobble-sol-backend.onrender.com/chat", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ message: userMessage })
+    });
+
+    const data = await res.json();
+
+    // Show Wobble's reply
+    chatBox.innerHTML += `<div><b>Wobble:</b> ${data.reply}</div>`;
+    chatBox.scrollTop = chatBox.scrollHeight;
+  } catch (err) {
+    chatBox.innerHTML += `<div style="color:red"><b>Error:</b> could not connect</div>`;
+  }
+}
+</script>
 </html>
+
 
 
 
