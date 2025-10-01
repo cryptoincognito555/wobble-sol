@@ -83,7 +83,31 @@
       object-fit: contain;
     }
     .gallery img:hover { transform: scale(1.02); }
+    .video-container {
+  position: relative;
+  display: inline-block;
+}
 
+.volume-btn {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: rgba(0,0,0,0.5);
+  border: none;
+  color: white;
+  font-size: 18px;
+  padding: 6px 8px;
+  border-radius: 50%;
+  cursor: pointer;
+  z-index: 10;
+  transition: background 0.3s ease;
+}
+
+.volume-btn:hover {
+  background: rgba(0,0,0,0.7);
+}
+
+    
     /* Chatbot styling */
     #chat-container {
   position: fixed;
@@ -238,9 +262,23 @@
         chatBox.innerHTML += `<div style="color:red"><b>Error:</b> could not connect</div>`;
       }
     }
+    // Volume toggle
+const video = document.getElementById("mascotVideo");
+const volumeToggle = document.getElementById("volumeToggle");
+
+volumeToggle.addEventListener("click", () => {
+  video.muted = !video.muted;
+  volumeToggle.textContent = video.muted ? "🔇" : "🔊";
+
+  if (!video.muted) {
+    video.play().catch(() => {}); // ensure playback continues after unmute
+  }
+});
+
   </script>
 </body>
 </html>
+
 
 
 
