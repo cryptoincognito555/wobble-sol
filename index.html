@@ -223,7 +223,7 @@
       chatBox.scrollTop = chatBox.scrollHeight;
 
       try {
-        const res = await fetch("https://wobble-sol-backend.onrender.com/chat", {
+        const res = await fetch("https://wobble-sol-backend.onrender.com", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ message: userMessage })
@@ -238,4 +238,5 @@
   </script>
 </body>
 </html>
+
 
